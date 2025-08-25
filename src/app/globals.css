@@ -1,0 +1,100 @@
+@import "tailwindcss";
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+input {
+  outline: none;
+}
+
+button:hover {
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: not-allowed;
+}
+
+.packing-list h1 {
+  font-size: large;
+  margin-top: 0.7rem;
+  margin-bottom: 0.5rem;
+}
+
+.packing-list h2 {
+  font-size: medium;
+  margin-top: 0.4rem;
+  margin-bottom: 0.2rem;
+}
+
+.packing-list h3 {
+  font-size: medium;
+  margin-top: 0.3rem;
+  margin-bottom: 0.1rem;
+}
+
+.packing-list ul {
+  list-style: inherit;
+  margin-left: 1rem;
+}
+
+.packing-list p {
+  margin: 0.3rem 0;
+}
+
+.geoapify-autocomplete-input {
+  width: 100%!important;
+  border: 1px solid #262626!important;
+  background-color: rgba(23, 23, 23, 0.5);
+  border-radius: 0.125rem; /* 2px */
+  padding-top: 0.25rem;    /* 4px */
+  padding-bottom: 0.25rem; /* 4px */
+  padding-left: 0.5rem;    /* 8px */
+  padding-right: 0.5rem;   /* 8px */
+  font-size: 0.875rem;     /* 14px */
+}
+
+.geoapify-autocomplete-items {
+  background-color: rgb(23, 23, 23)!important;
+  border-bottom-left-radius: 0.25rem;
+  border-bottom-right-radius: 0.25rem;
+  font-size: 0.875rem;
+}
+
+.geoapify-close-button svg {
+  color: var(--foreground);
+}
+
+.geoapify-autocomplete-item .icon {
+  display: none!important;
+}
+
+.geoapify-autocomplete-item .address .main-part {
+  color: #eab308;
+}
+
+.geoapify-autocomplete-item .address .secondary-part {
+  color: var(--foreground);
+}

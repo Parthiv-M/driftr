@@ -1,0 +1,89 @@
+generator client {
+  provider = "prisma-client-js"
+  engineType = "library"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id        String   @id
+  email     String   @unique
+  username  String?  @unique
+  fullName  String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  trips     Trip[] 
+}
+
+model Trip {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  name                   String
+  startsOn               DateTime
+  endsOn                 DateTime
+  destination            String
+  tags                   String[]
+  coverImage             String?
+  travelMode             TravelMode @default(PLANE)
+  destinationCoordinates String?
+  packingList            String?    @db.Text // Use Text for longer markdown content
+
+  // A trip has exactly one set of links and one set of metadata
+  linkTree LinkTree?
+  metadata Metadata?
+
+  // A trip belongs to one user
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model LinkTree {
+  id            String  @id @default(cuid())
+  googlePhotos  String?
+  dropbox       String?
+  googleDrive   String?
+  travelWebsite String?
+  customLinks   String[]
+
+  // This LinkTree belongs to one Trip
+  tripId String @unique
+  trip   Trip   @relation(fields: [tripId], references: [id], onDelete: Cascade)
+}
+
+model Metadata {
+  id              String          @id @default(cuid())
+  country         String
+  state           String?
+  totalDays       Int
+  destinationType DestinationType @default(CITY)
+  continent       String?
+
+  // This Metadata belongs to one Trip
+  tripId String @unique
+  trip   Trip   @relation(fields: [tripId], references: [id], onDelete: Cascade)
+}
+
+enum TravelMode {
+  PLANE
+  CAR
+  TRAIN
+  BOAT
+  BUS
+  OTHER
+}
+
+enum DestinationType {
+  CITY
+  NATURE
+  BEACH
+  MOUNTAINS
+  ADVENTURE
+  RELAXATION
+  CULTURAL
+}
