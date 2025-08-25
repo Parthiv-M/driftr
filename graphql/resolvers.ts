@@ -140,7 +140,7 @@ export const resolvers = {
           orientation: 'landscape',
         });
 
-        if (result.type === 'success') {
+        if (result.type === 'success' && !Array.isArray(result.response)) {
           coverImage = result.response.urls.regular;
         } else {
           console.log('Error from Unsplash API');
