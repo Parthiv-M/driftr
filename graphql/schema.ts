@@ -60,6 +60,27 @@ export const typeDefs = gql`
     CITY, NATURE, BEACH, MOUNTAINS, ADVENTURE, RELAXATION, CULTURAL
   }
 
+  type Stats {
+    totalTrips: Int
+    totalCountries: Int
+    totalDays: Int
+    longestTrip: TripType
+    shortestTrip: TripType
+    mostVisitedCountry: MostVisitedCountry
+  }
+
+  type MostVisitedCountry {
+    country: String
+    visitCount: Int
+  }
+
+  type TripType {
+    id: ID
+    name: String
+    days: Int
+    country: String
+  }
+
   input CreateTripInput {
     name: String!
     startsOn: DateTime!
@@ -100,6 +121,8 @@ export const typeDefs = gql`
     me: User # Fetches the currently authenticated user
     myTrips: [Trip!]
     trip(id: ID!): Trip
+    stats: Stats
+    tripsByUsername(username: String!): [Trip!]
   }
 
   type Mutation {

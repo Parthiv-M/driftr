@@ -98,3 +98,44 @@ button:disabled {
 .geoapify-autocomplete-item .address .secondary-part {
   color: var(--foreground);
 }
+
+/* Leaflet Popup Styling */
+.leaflet-popup-content-wrapper {
+  min-width: 150px!important;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 5px!important;
+  box-shadow: none!important;
+  border: 1px solid #161616!important;
+}
+
+.leaflet-popup-tip {
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid #161616!important;
+  box-shadow: none!important;
+}
+
+.leaflet-popup-content {
+  margin: 0.5rem!important;
+}
+
+.leaflet-popup-content p {
+  margin: 0!important;
+  padding: 0!important;
+}
+
+/* Close button styling */
+.leaflet-popup-close-button {
+  position: absolute!important;
+  top: -15px!important;
+  right: -15px!important;
+  color: white!important;
+  background-color: black!important;
+  font-size: 20px;
+  font-weight: normal;
+  width: 24px;
+  height: 24px;
+  line-height: 24px;
+  text-align: center;
+  border-radius: 50%;
+  margin: 4px;
+}

@@ -52,7 +52,102 @@ export const resolvers = {
       }
 
       return trip;
-    }
+    },
+    stats: async (_parent: any, _args: any, context: MyContext) => {
+      if (!context.user) {
+        throw new GraphQLError('Not authenticated', { extensions: { code: 'UNAUTHENTICATED' } });
+      }
+      const [stats, trips] = await Promise.all([
+        // Aggregation query
+        prisma.trip.aggregate({
+          where: { userId: context.user.id },
+          _count: { id: true }
+        }),
+
+        // Get trips with metadata for country analysis and trip details
+        prisma.trip.findMany({
+          where: { userId: context.user.id },
+          include: { metadata: true },
+          orderBy: { metadata: { totalDays: 'desc' } }
+        })
+      ]);
+
+      if (trips.length === 0) {
+        return {
+          totalTrips: 0,
+          totalCountries: 0,
+          totalDays: 0,
+          longestTrip: null,
+          shortestTrip: null,
+          mostVisitedCountry: null
+        };
+      }
+
+      // Calculate unique countries and total days
+      const countries = trips
+        .map(trip => trip.metadata?.country)
+        .filter(Boolean) as string[];
+
+      const uniqueCountries = new Set(countries);
+      const totalDays = trips.reduce((sum, trip) =>
+        sum + (trip.metadata?.totalDays || 0), 0
+      );
+
+      // Find longest and shortest trips
+      const tripsWithDays = trips.filter(trip => trip.metadata?.totalDays);
+      const longestTrip = tripsWithDays[0];
+      const shortestTrip = tripsWithDays[tripsWithDays.length - 1];
+
+      // Calculate most visited country
+      const countryFrequency = countries.reduce((acc, country) => {
+        acc[country] = (acc[country] || 0) + 1;
+        return acc;
+      }, {} as Record<string, number>);
+
+      const mostVisitedEntry = Object.entries(countryFrequency)
+        .sort(([, a], [, b]) => b - a)[0];
+
+      return {
+        totalTrips: stats._count.id,
+        totalCountries: uniqueCountries.size,
+        totalDays,
+        longestTrip: longestTrip ? {
+          id: longestTrip.id,
+          name: longestTrip.name,
+          days: longestTrip.metadata!.totalDays,
+          country: longestTrip.metadata!.country
+        } : null,
+        shortestTrip: shortestTrip ? {
+          id: shortestTrip.id,
+          name: shortestTrip.name,
+          days: shortestTrip.metadata!.totalDays,
+          country: shortestTrip.metadata!.country
+        } : null,
+        mostVisitedCountry: mostVisitedEntry ? {
+          country: mostVisitedEntry[0],
+          visitCount: mostVisitedEntry[1]
+        } : null
+      };
+    },
+    tripsByUsername: async (_parent: any, { username }: { username: string }) => {
+      const user = await prisma.user.findUnique({
+        where: { username },
+      });
+
+      if (!user) {
+        throw new GraphQLError('User not found');
+      }
+
+      return prisma.trip.findMany({
+        where: { userId: user.id },
+        include: {
+          metadata: true, // Include metadata to get totalDays
+        },
+        orderBy: {
+          startsOn: 'desc', // Order the trips by start date
+        },
+      });
+    },
   },
   Mutation: {
     signInWithOtp: async (_parent: any, { email }: { email: string }, context: MyContext) => {
